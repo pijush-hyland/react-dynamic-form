@@ -1,0 +1,747 @@
+[
+  {
+    "name": "directions",
+    "fields": [
+      {
+        "name": "freightType",
+        "type": "select",
+        "options": [
+          "Ocean",
+          "Air"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Freight Type is required."
+          }
+        ]
+      },
+      {
+        "name": "direction",
+        "type": "select",
+        "options": [
+          "Import",
+          "Export"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Direction is required."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "containerDetails",
+    "fields": [
+      {
+        "name": "containerLoadType",
+        "label": "Container Load Type",
+        "type": "select",
+        "options": [
+          "FCL",
+          "LCL"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Container LoadType (FCL/LCL) is required."
+          }
+        ]
+      },
+      {
+        "name": "containerTypes",
+        "type": "group",
+        "fields": [
+          {
+            "name": "containerType",
+            "type": "select",
+            "hiddenLabel": true,
+            "options": [
+              "Dry Storage Containers",
+              "Refrigerated Containers",
+              "Open Top Containers",
+              "Flat Rack Containers",
+              "Tank Containers",
+              "Double Door Containers",
+              "Side Open Containers",
+              "Half-Height Containers"
+            ],
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Container Type is required."
+              }
+            ]
+          },
+          {
+            "name": "containerSizeReference",
+            "hiddenLabel": true,
+            "type": "select",
+            "options": {
+              "Dry Storage Containers": [
+                "20ft Standard",
+                "40ft Standard",
+                "40ft High Cube"
+              ],
+              "Refrigerated Containers": [
+                "20ft Reefer",
+                "40ft Reefer"
+              ],
+              "Open Top Containers": [
+                "20ft Open Top",
+                "40ft Open Top"
+              ],
+              "Flat Rack Containers": [
+                "20ft Flat Rack",
+                "40ft Flat Rack"
+              ],
+              "Tank Containers": [
+                "ISO Tank"
+              ],
+              "Double Door Containers": [
+                "20ft Tunnel",
+                "40ft Tunnel"
+              ],
+              "Side Open Containers": [
+                "20ft Side",
+                "40ft Side"
+              ],
+              "Half-Height Containers": [
+                "Half-Height"
+              ]
+            },
+            "optionsDependentOn": "containerType",
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Container Size Reference is required."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "numberOfContainers",
+        "type": "number",
+        "max": 100,
+        "min": 1,
+        "step": 1,
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Number of Containers is required."
+          }
+        ]
+      },
+      {
+        "name": "wightOfOneContainer",
+        "label": "Weight of 1 Container (kgs)",
+        "type": "number",
+        "max": 50000,
+        "min": 1,
+        "step": 0.01,
+        "rightIcon": "kg",
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Weight of 1 Container (kgs) is required."
+          }
+        ]
+      },
+      {
+        "name": "wightGrossOrChargeable",
+        "label": "Weight Gross or Chargeable (kgs)",
+        "rightIcon": "kg",
+        "readOnly": true,
+        "valueCalculation":"{return values.wightOfOneContainer * values.numberOfContainers}"
+      },
+      {
+        "name": "cargoDimensions",
+        "label": "Cargo Dimensions (L x W x H)",
+        "type": "group",
+        "fields": [
+          {
+            "name": "length",
+            "placeholder": "Length",
+            "hiddenLabel": true,
+            "type": "number",
+            "max": 500,
+            "min": 1,
+            "step": 0.01,
+            "rightIcon": "In.",
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Length is required."
+              }
+            ]
+          },
+          {
+            "name": "width",
+            "placeholder": "Width",
+            "hiddenLabel": true,
+            "type": "number",
+            "max": 500,
+            "min": 1,
+            "step": 0.01,
+            "rightIcon": "In.",
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Width is required."
+              }
+            ]
+          },
+          {
+            "name": "height",
+            "type": "number",
+            "placeholder": "height",
+            "hiddenLabel": true,
+            "max": 500,
+            "min": 1,
+            "step": 0.01,
+            "rightIcon": "In.",
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Height is required."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CBM",
+        "label": "CBM (Cubic Meter)",
+        "type": "number",
+        "readOnly": true,
+        "valueCalculation": "{return ((values.cargoDimensions.length * values.cargoDimensions.width * values.cargoDimensions.height))}"
+      }
+    ]
+  },
+  {
+    "name": "shipmentDetails",
+    "fields": [
+      
+      {
+        "name": "shipmentType",
+        "type": "select",
+        "options": [
+          "General Cargo",
+          "Containerized Cargo",
+          "Dry Bulk Cargo",
+          "Liquid Bulk Cargo",
+          "Project Cargo",
+          "RO-Ro Cargo",
+          "Hazardous Cargo",
+          "Refer Cargo",
+          "Air Cargo",
+          "Livestock Cargo",
+          "Specialized Cargo"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Shipment Type is required."
+          }
+        ]
+      },
+      {
+        "name": "originLocation",
+        "type": "group",
+        "fields": [
+          {
+            "name": "originCountry",
+            "type": "select",
+            "placeholder": "Origin Country",
+            "hiddenLabel": true,
+            "options": [
+              "USA",
+              "Canada",
+              "Mexico",
+              "UK",
+              "Germany",
+              "France",
+              "China",
+              "Japan"
+            ],
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Origin Country is required."
+              }
+            ]
+          },
+          {
+            "name": "originPort",
+            "type": "select",
+            "placeholder": "Origin Port",
+            "hiddenLabel": true,
+            "options": {
+              "USA": [
+                "Los Angeles",
+                "New York",
+                "Miami"
+              ],
+              "Canada": [
+                "Vancouver",
+                "Toronto",
+                "Montreal"
+              ],
+              "Mexico": [
+                "Manzanillo",
+                "Veracruz",
+                "Altamira"
+              ],
+              "UK": [
+                "London",
+                "Liverpool",
+                "Southampton"
+              ],
+              "Germany": [
+                "Hamburg",
+                "Bremen",
+                "Dusseldorf"
+              ],
+              "France": [
+                "Marseille",
+                "Le Havre",
+                "Nice"
+              ],
+              "China": [
+                "Shanghai",
+                "Shenzhen",
+                "Guangzhou"
+              ],
+              "Japan": [
+                "Tokyo",
+                "Osaka",
+                "Yokohama"
+              ]
+            },
+            "optionsDependentOn": "originCountry",
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Origin Port is required."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "destinationLocation",
+        "type": "group",
+        "fields": [
+          {
+            "name": "destinationCountry",
+            "type": "select",
+            "placeholder": "Dest. Country",
+            "hiddenLabel": true,
+            "options": [
+              "USA",
+              "Canada",
+              "Mexico",
+              "UK",
+              "Germany",
+              "France",
+              "China",
+              "Japan"
+            ],
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Destination Country is required."
+              }
+            ]
+          },
+          {
+            "name": "destinationPort",
+            "type": "select",
+            "placeholder": "Dest. Port",
+            "hiddenLabel": true,
+            "optionsDependentOn": "destinationCountry",
+            "options": {
+              "USA": [
+                "Los Angeles",
+                "New York",
+                "Miami"
+              ],
+              "Canada": [
+                "Vancouver",
+                "Toronto",
+                "Montreal"
+              ],
+              "Mexico": [
+                "Manzanillo",
+                "Veracruz",
+                "Altamira"
+              ],
+              "UK": [
+                "London",
+                "Liverpool",
+                "Southampton"
+              ],
+              "Germany": [
+                "Hamburg",
+                "Bremen",
+                "Dusseldorf"
+              ],
+              "France": [
+                "Marseille",
+                "Le Havre",
+                "Nice"
+              ],
+              "China": [
+                "Shanghai",
+                "Shenzhen",
+                "Guangzhou"
+              ],
+              "Japan": [
+                "Tokyo",
+                "Osaka",
+                "Yokohama"
+              ]
+            },
+            "required": true,
+            "validation": [
+              {
+                "type": "Required",
+                "message": "Destination Port is required."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "commodityDetails",
+    "fields": [
+      {
+        "name": "commodityType",
+        "type": "select",
+        "options": [
+          "Electronics",
+          "Machinery",
+          "Automobile Parts",
+          "Textiles",
+          "Garments",
+          "Footwear",
+          "Furniture",
+          "Household Goods",
+          "Pharmaceuticals",
+          "Medical Equipment",
+          "Chemicals",
+          "Paints and Coatings",
+          "Batteries",
+          "Plastic Products",
+          "Rubber Goods",
+          "Paper and Pulp",
+          "Books and Stationery",
+          "Toys and Games",
+          "Sports Equipment",
+          "Foodstuffs",
+          "Beverages",
+          "Grains",
+          "Seeds",
+          "Sugar",
+          "Salt",
+          "Flour",
+          "Coffee",
+          "Tea",
+          "Spices",
+          "Fruits",
+          "Vegetables",
+          "Frozen Foods",
+          "Meat",
+          "Seafood",
+          "Dairy Products",
+          "Livestock",
+          "Animal Feed",
+          "Fertilizers",
+          "Cement",
+          "Steel Products",
+          "Iron Ore",
+          "Coal",
+          "Timber",
+          "Wood Products",
+          "Glassware",
+          "Construction Materials",
+          "Textile Raw Materials",
+          "Crude Oil",
+          "Refined Petroleum",
+          "Natural Gas",
+          "Lubricants",
+          "Cosmetics",
+          "Detergents and Soaps",
+          "Cleaning Products",
+          "Jewelry",
+          "Precious Metals",
+          "Artwork",
+          "Industrial Equipment",
+          "Tools",
+          "Pipes and Tubes",
+          "Cables",
+          "Wires",
+          "Containers",
+          "Packaging Materials",
+          "Adhesives",
+          "Explosives",
+          "Inks and Dyes",
+          "Tobacco Products",
+          "Alcoholic Beverages",
+          "Bicycles",
+          "Motorcycles",
+          "Aircraft Parts",
+          "Ship Parts",
+          "Clothing Accessories"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Commodity Type is required."
+          }
+        ]
+      },
+      {
+        "name": "INCOTERMS",
+        "type": "select",
+        "options": [
+          "EXW",
+          "FCA",
+          "CPT",
+          "CIP",
+          "DAP",
+          "DPU",
+          "DDP",
+          "FOB",
+          "CFR",
+          "CIF"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "INCOTERMS is required."
+          }
+        ]
+      },
+      {
+        "name": "numberOfPieces",
+        "type": "number",
+        "max": 10000,
+        "min": 1,
+        "step": 1,
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Number of Pieces is required."
+          }
+        ]
+      },
+      {
+        "name": "specialHandlings",
+        "type": "select",
+        "options": [
+          "DG cargo",
+          "Temperature control",
+          "None"
+        ],
+        "required": true,
+        "validation": [
+          {
+            "type": "Required",
+            "message": "Special Handlings is required."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "reviewSubmission",
+    "fields": [
+      {
+        "name": "directions",
+        "label": "Review Your Directions",
+        "fields": [
+          {
+            "name": "freightType",
+            "readOnly": true,
+            "valueCalculation": "{return values.freightType}"
+          },
+          {
+            "name": "direction",
+            "readOnly": true,
+            "valueCalculation": "{return values.direction}"
+          }
+        ]
+      },
+      {
+        "name": "containerDetails",
+        "label": "Review Your ContainerDetails",
+        "fields": [
+          {
+            "name": "containerLoadType",
+            "readOnly": true,
+            "valueCalculation": "{return values.containerLoadType}"
+          },
+          {
+            "name": "containerLoadType",
+            "readOnly": true,
+            "valueCalculation": "{return values.containerLoadType}"
+          },
+          {
+            "name": "containerType",
+            "readOnly": true,
+            "valueCalculation": "{return values.containerTypes.containerType}"
+          },
+          {
+            "name": "containerSizeReference",
+            "readOnly": true,
+            "valueCalculation": "{return values.containerTypes.containerSizeReference}"
+          },
+          {
+            "name": "numberOfContainers",
+            "readOnly": true,
+            "valueCalculation": "{return values.numberOfContainers}"
+          },
+          {
+            "name": "wightOfOneContainer",
+            "readOnly": true,
+            "valueCalculation": "{return values.wightOfOneContainer}"
+          },
+          {
+            "name": "wightGrossOrChargeable",
+            "readOnly": true,
+            "valueCalculation": "{return values.wightGrossOrChargeable}"
+          },
+          {
+            "name": "cargoDimensions",
+            "label": "Cargo Dimensions (L x W x H)",
+            "type": "group",
+            "fields": [
+              {
+                "name": "length",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.cargoDimensions.length}"
+              },
+              {
+                "name": "width",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.cargoDimensions.width}"
+              },
+              {
+                "name": "height",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.cargoDimensions.height}"
+              }
+            ]
+          },
+          {
+            "name": "CBM",
+            "label": "CBM (Cubic Meter)",
+            "readOnly": true,
+            "valueCalculation": "{return values.CBM}"
+          }
+        ]
+      },
+      {
+        "name": "shipmentDetails",
+        "label": "Review Your Shipment Details",
+        "fields": [
+          {
+            "name": "shipmentType",
+            "readOnly": true,
+            "valueCalculation": "{return values.shipmentType}"
+          },
+          {
+            "name": "originLocation",
+            "label": "Origin Location",
+            "type": "group",
+            "fields": [
+              {
+                "name": "originCountry",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.originLocation.originCountry}"
+              },
+              {
+                "name": "originPort",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.originLocation.originPort}"
+              }
+            ]
+          },
+          {
+            "name": "destinationLocation",
+            "label": "Destination Location",
+            "type": "group",
+            "fields": [
+              {
+                "name": "destinationCountry",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.destinationLocation.destinationCountry}"
+              },
+              {
+                "name": "destinationPort",
+                "readOnly": true,
+                "hiddenLabel": true,
+                "valueCalculation": "{return values.destinationLocation.destinationPort}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "commodityDetails",
+        "label": "Review Your Commodity Details",
+        "fields": [
+          {
+            "name": "commodityType",
+            "readOnly": true,
+            "valueCalculation": "{return values.commodityType}"
+          },
+          {
+            "name": "INCOTERMS",
+            "readOnly": true,
+            "valueCalculation": "{return values.INCOTERMS}"
+          },
+          {
+            "name": "numberOfPieces",
+            "readOnly": true,
+            "valueCalculation": "{return values.numberOfPieces}"
+          },
+          {
+            "name": "specialHandlings",
+            "readOnly": true,
+            "valueCalculation": "{return values.specialHandlings}"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -7,6 +7,7 @@ import Select from 'react-select';
 type QuoteFormState = {
 	direction: string;
 	shipmentType: string;
+	containerLoadType: string;
 	containerType: string;
 	numberOfContainers: number;
 	commodity: string;
@@ -35,6 +36,7 @@ export default function QuoteForm() {
 		direction: '',
 		shipmentType: '',
 		containerType: '',
+		containerLoadType: "",
 		numberOfContainers: 1,
 		commodity: '',
 		incoterm: '',
@@ -52,6 +54,7 @@ export default function QuoteForm() {
 	const directions = quoteOptions.directions;
 	const shipmentTypes = quoteOptions.shipmentTypes;
 	const containerTypes = quoteOptions.containerTypes;
+	const containerLoadType = quoteOptions.containerLoadType;
 	const commodities = quoteOptions.commodities;
 	const incoterms = quoteOptions.incoterms;
 	const specialHandlings = quoteOptions.specialHandlings;
@@ -148,9 +151,23 @@ export default function QuoteForm() {
 					/>
 					{errors.shipmentType && <p className="text-red-500 text-sm mt-1">{errors.shipmentType}</p>}
 				</div>
+				{/* Container Load Type */}
+				<div>
+					<label className="block font-semibold mb-2 text-blue-900">Container Load Type</label>
+					<Select
+						name="containerLoadType"
+						options={toOptions(containerLoadType)}
+						classNamePrefix="react-select"
+						placeholder="Select container type..."
+						value={form.containerLoadType ? { value: form.containerLoadType, label: form.containerLoadType } : null}
+						onChange={handleSelectChange('containerLoadType')}
+						isClearable
+					/>
+					{errors.containerType && <p className="text-red-500 text-sm mt-1">{errors.containerType}</p>}
+				</div>
 				{/* Container Type */}
 				<div>
-					<label className="block font-semibold mb-2 text-blue-900">Container Type (FCL/LCL)</label>
+					<label className="block font-semibold mb-2 text-blue-900">Container Type</label>
 					<Select
 						name="containerType"
 						options={toOptions(containerTypes)}
