@@ -1,17 +1,20 @@
 {
   "name": "Quote Request",
-  "isForm": "true",
+  "isForm": true,
+  "type": "form",
   "description": "Multi-stage quote request form",
   "hideName": true,
   "stages": [
     {
       "name": "directions",
+      "isStage": true,
       "type": "stage",
       "fields": [
         {
           "name": "freightType",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": ["Ocean", "Air"],
           "required": true,
           "validation": [
@@ -20,8 +23,9 @@
         },
         {
           "name": "direction",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": ["Import", "Export"],
           "required": true,
           "validation": [
@@ -32,13 +36,15 @@
     },
     {
       "name": "containerDetails",
+      "isStage": true,
       "type": "stage",
       "fields": [
         {
           "name": "containerLoadType",
           "label": "Container Load Type",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": ["FCL", "LCL"],
           "required": true,
           "validation": [
@@ -50,12 +56,14 @@
         },
         {
           "name": "containerTypes",
-          "isGroup": "true",
+          "isGroup": true,
+          "type": "group",
           "fields": [
             {
               "name": "containerType",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "hiddenLabel": true,
               "options": [
                 "Dry Storage Containers",
@@ -74,8 +82,9 @@
             },
             {
               "name": "containerSizeReference",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "hiddenLabel": true,
               "options": {
                 "Dry Storage Containers": [
@@ -104,8 +113,9 @@
         },
         {
           "name": "numberOfContainers",
-          "isField": "true",
-          "type": "number",
+          "isField": true,
+          "type": "field",
+          "inputType": "number",
           "max": 100,
           "min": 1,
           "step": 1,
@@ -120,8 +130,9 @@
         {
           "name": "wightOfOneContainer",
           "label": "Weight of 1 Container (kgs)",
-          "isField": "true",
-          "type": "number",
+          "isField": true,
+          "type": "field",
+          "inputType": "number",
           "max": 50000,
           "min": 1,
           "step": 0.01,
@@ -136,7 +147,7 @@
         },
         {
           "name": "wightGrossOrChargeable",
-          "isField": "true",
+          "isField": true,
           "label": "Weight Gross or Chargeable (kgs)",
           "rightIcon": "kg",
           "isReadOnly": true,
@@ -145,12 +156,14 @@
         {
           "name": "cargoDimensions",
           "label": "Cargo Dimensions (L x W x H)",
-          "isGroup": "true",
+          "isGroup": true,
+          "type": "group",
           "fields": [
             {
               "name": "length",
-              "isField": "true",
-              "type": "number",
+              "isField": true,
+              "type": "field",
+              "inputType": "number",
               "placeholder": "Length",
               "hiddenLabel": true,
               "max": 500,
@@ -164,8 +177,9 @@
             },
             {
               "name": "width",
-              "isField": "true",
-              "type": "number",
+              "isField": true,
+              "type": "field",
+              "inputType": "number",
               "placeholder": "Width",
               "hiddenLabel": true,
               "max": 500,
@@ -179,8 +193,9 @@
             },
             {
               "name": "height",
-              "isField": "true",
-              "type": "number",
+              "isField": true,
+              "type": "field",
+              "inputType": "number",
               "placeholder": "height",
               "hiddenLabel": true,
               "max": 500,
@@ -197,8 +212,9 @@
         {
           "name": "CBM",
           "label": "CBM (Cubic Meter)",
-          "isField": "true",
-          "type": "number",
+          "isField": true,
+          "type": "field",
+          "inputType": "number",
           "isReadOnly": true,
           "valueCalculation": "{return ((values.cargoDimensions.length * values.cargoDimensions.width * values.cargoDimensions.height))}"
         }
@@ -206,12 +222,14 @@
     },
     {
       "name": "shipmentDetails",
+      "isStage": true,
       "type": "stage",
       "fields": [
         {
           "name": "shipmentType",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": [
             "General Cargo",
             "Containerized Cargo",
@@ -235,12 +253,14 @@
         },
         {
           "name": "originLocation",
-          "isGroup": "true",
+          "isGroup": true,
+          "type": "group",
           "fields": [
             {
               "name": "originCountry",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "placeholder": "Origin Country",
               "hiddenLabel": true,
               "options": [
@@ -263,8 +283,9 @@
             },
             {
               "name": "originPort",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "placeholder": "Origin Port",
               "hiddenLabel": true,
               "options": {
@@ -290,12 +311,14 @@
         },
         {
           "name": "destinationLocation",
-          "isGroup": "true",
+          "isGroup": true,
+          "type": "group",
           "fields": [
             {
               "name": "destinationCountry",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "placeholder": "Dest. Country",
               "hiddenLabel": true,
               "options": [
@@ -318,8 +341,9 @@
             },
             {
               "name": "destinationPort",
-              "isField": "true",
-              "type": "select",
+              "isField": true,
+              "type": "field",
+              "inputType": "select",
               "placeholder": "Dest. Port",
               "hiddenLabel": true,
               "optionsDependentOn": "destinationCountry",
@@ -346,65 +370,15 @@
       ]
     },
     {
-      "name": "additionalDetails",
-      "type": "stage",
-      "fields": [
-        {
-          "name": "specialInstructions",
-          "isField": "true",
-          "type": "textarea",
-          "placeholder": "Special Instructions (if any)",
-          "maxLength": 500
-        },
-        {
-          "name": "contactInformation",
-          "isGroup": "true",
-          "fields": [
-            {
-              "name": "contactName",
-              "isField": "true",
-              "type": "text",
-              "placeholder": "Contact Name",
-              "required": true,
-              "validation": [
-                { "type": "Required", "message": "Contact Name is required." }
-              ]
-            },
-            {
-              "name": "contactEmail",
-              "isField": "true",
-              "type": "email",
-              "placeholder": "Contact Email",
-              "required": true,
-              "validation": [
-                {
-                  "type": "Required",
-                  "message": "Contact Email is required."
-                },
-                {
-                  "type": "Email",
-                  "message": "Please enter a valid email address."
-                }
-              ]
-            },
-            {
-              "name": "contactPhoneNumber",
-              "isField": "true",
-              "type": "tel",
-              "placeholder": "+1 (123) 456-7890"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "commodityDetails",
+      "isStage": true,
       "type": "stage",
       "fields": [
         {
           "name": "commodityType",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": [
             "Electronics",
             "Machinery",
@@ -491,8 +465,9 @@
         },
         {
           "name": "INCOTERMS",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": [
             "EXW",
             "FCA",
@@ -515,8 +490,9 @@
         },
         {
           "name": "numberOfPieces",
-          "isField": "true",
-          "type": "number",
+          "isField": true,
+          "type": "field",
+          "inputType": "number",
           "max": 10000,
           "min": 1,
           "step": 1,
@@ -530,8 +506,9 @@
         },
         {
           "name": "specialHandlings",
-          "isField": "true",
-          "type": "select",
+          "isField": true,
+          "type": "field",
+          "inputType": "select",
           "options": ["DG cargo", "Temperature control", "None"],
           "required": true,
           "validation": [
@@ -545,22 +522,23 @@
     },
     {
       "name": "reviewSubmission",
+      "isStage": true,
       "type": "stage",
       "fields": [
         {
           "name": "directions",
-          "isSection": "true",
+          "isSection": true,
           "label": "Review Your Directions",
           "fields": [
             {
               "name": "freightType",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.freightType}"
             },
             {
               "name": "direction",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.direction}"
             }
@@ -568,67 +546,68 @@
         },
         {
           "name": "containerDetails",
-          "isSection": "true",
+          "isSection": true,
           "label": "Review Your Container Details",
           "fields": [
             {
               "name": "containerLoadType",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.containerLoadType}"
             },
             {
               "name": "containerType",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.containerTypes.containerType}"
             },
             {
               "name": "containerSizeReference",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.containerTypes.containerSizeReference}"
             },
             {
               "name": "numberOfContainers",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.numberOfContainers}"
             },
             {
               "name": "wightOfOneContainer",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.wightOfOneContainer}"
             },
             {
               "name": "wightGrossOrChargeable",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.wightGrossOrChargeable}"
             },
             {
               "name": "cargoDimensions",
-              "isGroup": "true",
+              "isGroup": true,
+              "type": "group",
               "label": "Cargo Dimensions (L x W x H)",
               "fields": [
                 {
                   "name": "length",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.cargoDimensions.length}"
                 },
                 {
                   "name": "width",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.cargoDimensions.width}"
                 },
                 {
                   "name": "height",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.cargoDimensions.height}"
@@ -637,7 +616,7 @@
             },
             {
               "name": "CBM",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "label": "CBM (Cubic Meter)",
               "valueCalculation": "{return values.CBM}"
@@ -646,30 +625,31 @@
         },
         {
           "name": "shipmentDetails",
-          "isSection": "true",
+          "isSection": true,
           "label": "Review Your Shipment Details",
           "fields": [
             {
               "name": "shipmentType",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.shipmentType}"
             },
             {
               "name": "originLocation",
-              "isGroup": "true",
+              "isGroup": true,
+              "type": "group",
               "label": "Origin Location",
               "fields": [
                 {
                   "name": "originCountry",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.originLocation.originCountry}"
                 },
                 {
                   "name": "originPort",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.originLocation.originPort}"
@@ -678,19 +658,20 @@
             },
             {
               "name": "destinationLocation",
-              "isGroup": "true",
+              "isGroup": true,
+              "type": "group",
               "label": "Destination Location",
               "fields": [
                 {
                   "name": "destinationCountry",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.destinationLocation.destinationCountry}"
                 },
                 {
                   "name": "destinationPort",
-                  "isField": "true",
+                  "isField": true,
                   "isReadOnly": true,
                   "hiddenLabel": true,
                   "valueCalculation": "{return values.destinationLocation.destinationPort}"
@@ -701,30 +682,30 @@
         },
         {
           "name": "commodityDetails",
-          "isSection": "true",
+          "isSection": true,
           "label": "Review Your Commodity Details",
           "fields": [
             {
               "name": "commodityType",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.commodityType}"
             },
             {
               "name": "INCOTERMS",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.INCOTERMS}"
             },
             {
               "name": "numberOfPieces",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.numberOfPieces}"
             },
             {
               "name": "specialHandlings",
-              "isField": "true",
+              "isField": true,
               "isReadOnly": true,
               "valueCalculation": "{return values.specialHandlings}"
             }

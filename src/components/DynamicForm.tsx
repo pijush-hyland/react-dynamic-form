@@ -1,16 +1,16 @@
-import React, { useState, type MouseEventHandler } from 'react';
-import type { Form, Field, GroupField, FormGroup, Section } from '../utilities/types'
+import React, { useState } from 'react';
+import { type Form, type Stage, type GroupField, type Field, type Section, TypeValues, InputTypeValues } from '../utilities/types'
 import Select from 'react-select';
 
 // Helper to get initial values for the form
-const getInitialValues = (form: FormGroup[]) => {
+const getInitialValues = (form: Form) => {
 	const values: any = {};
 	const processFields = (fields: (Field | GroupField | Section)[], parent?: any) => {
 		fields.forEach((field) => {
-			if ('fields' in field && !('type' in field)) {
+			if (field.type === TypeValues.section) {
 				// Section: recurse into its fields
 				processFields(field.fields, parent);
-			} else if ('type' in field && field.type === 'group' && 'fields' in field && Array.isArray(field.fields)) {
+			} else if (field.type === TypeValues.group) {
 				parent[field.name] = {};
 				field.fields.forEach((subField) => {
 					parent[field.name][subField.name] = subField.defaultValue || '';
@@ -20,8 +20,8 @@ const getInitialValues = (form: FormGroup[]) => {
 			}
 		});
 	};
-	form.forEach((group) => {
-		processFields(group.fields, values);
+	form.stages.forEach((stage) => {
+		processFields(stage.fields, values);
 	});
 	return values;
 };
@@ -65,7 +65,7 @@ const renderField = (
 	errors?: Record<string, string>
 ) => {
 	if (field.isHidden) return null;
-	if (field.type === 'group' && 'fields' in field && Array.isArray(field.fields)) {
+	if (field.type === TypeValues.group) {
 		const labelText = !field.hiddenLabel && (field.label || toPerfectTitleCase(field.name));
 		return (
 			<div key={field.name} className="">
@@ -94,7 +94,7 @@ const renderField = (
 		// Assume icon is a className for an icon font or emoji
 		return <span className={`inline-block align-middle ${position === 'left' ? 'mr-2' : 'ml-2'}`}>{icon}</span>;
 	};
-	if (field.type === 'select') {
+	if (field.inputType === InputTypeValues.select) {
 		let options: string[] = [];
 		if (Array.isArray(field.options)) {
 			options = field.options;
@@ -156,7 +156,7 @@ const renderField = (
 			</div>
 		);
 	}
-	if (field.type === 'number') {
+	if (field.inputType === InputTypeValues.number) {
 		const labelText = !field.hiddenLabel && (field.label || toPerfectTitleCase(field.name));
 		const errorMsg = errors && errors[`${parentName ? parentName + '.' : ''}${field.name}`];
 		return (
@@ -237,122 +237,128 @@ const renderField = (
 
 // Helper to flatten all fields (including inside sections) from a group
 function flattenFields(fields: (Field | GroupField | Section)[]): (Field | GroupField)[] {
-  const result: (Field | GroupField)[] = [];
-  fields.forEach(item => {
-    if ((item as Section).fields && !(item as Field).type) {
-      // It's a section
-      result.push(...flattenFields((item as Section).fields));
-    } else {
-      result.push(item as Field | GroupField);
-    }
-  });
-  return result;
+	const result: (Field | GroupField)[] = [];
+	fields.forEach(item => {
+		if ((item as Section).fields && !(item as Field).type) {
+			// It's a section
+			result.push(...flattenFields((item as Section).fields));
+		} else {
+			result.push(item as Field | GroupField);
+		}
+	});
+	return result;
 }
 
 // Helper to render a field or section
 const renderFieldOrSection = (
-  item: Field | GroupField | Section,
-  value: any,
-  onChange: (name: string, value: any) => void,
-  parentName?: string,
-  allValues?: any,
-  errors?: Record<string, string>
+	item: Field | GroupField | Section,
+	value: any,
+	onChange: (name: string, value: any) => void,
+	parentName?: string,
+	allValues?: any,
+	errors?: Record<string, string>
 ) => {
-  if ((item as Section).fields && !(item as Field).type) {
-    // It's a Section
-    const section = item as Section;
-    return (
-      <div key={section.name} className="col-span-full">
-        {section.label && (
-          <div className="mb-3 text-lg font-semibold text-blue-800 border-b border-blue-200 pb-1">{section.label}</div>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {section.fields.map((field) =>
-            renderFieldOrSection(field, value ? value[field.name] : '', onChange, undefined, allValues, errors)
-          )}
-        </div>
-      </div>
-    );
-  }
-  // Otherwise, it's a Field or GroupField
-  return renderField(item as Field | GroupField, value, onChange, parentName, allValues, errors);
+	if ((item as Section).fields && !(item as Field).type) {
+		// It's a Section
+		const section = item as Section;
+		return (
+			<div key={section.name} className="col-span-full">
+				{section.label && (
+					<div className="mb-3 text-lg font-semibold text-blue-800 border-b border-blue-200 pb-1">{section.label}</div>
+				)}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{section.fields.map((field) =>
+						renderFieldOrSection(field, value ? value[field.name] : '', onChange, undefined, allValues, errors)
+					)}
+				</div>
+			</div>
+		);
+	}
+	// Otherwise, it's a Field or GroupField
+	return renderField(item as Field | GroupField, value, onChange, parentName, allValues, errors);
 };
 
 // StageProgressBar component
 interface StageProgressBarProps {
-	stages: { name: string }[];
+	form: Form;
 	stageStatus: { [groupName: string]: 'untouched' | 'incomplete' | 'complete' };
 	currentStage: number;
 	onStageClick: (idx: number) => void;
 }
 
-const StageProgressBar: React.FC<StageProgressBarProps> = ({ stages, stageStatus, currentStage, onStageClick }) => {
-  // Colors for each status
-  const statusColors = {
-    complete: 'bg-blue-500 text-white',
-    incomplete: 'bg-red-400 text-white',
-    untouched: 'bg-blue-200 text-blue-700',
-    current: 'bg-blue-400 text-white',
-  };
-  return (
-    <div className="w-full flex overflow-hidden">
-        {stages.map((group, idx) => {
-          const isCurrent = idx === currentStage;
-          const status = isCurrent
-            ? 'current'
-            : stageStatus[group.name] === 'complete'
-            ? 'complete'
-            : stageStatus[group.name] === 'incomplete'
-            ? 'incomplete'
-            : 'untouched';
-          const zIndex = 10 + idx;
-          const colorClass = statusColors[status];
-          // Chevron shape for all except last
-          const chevronStyle: React.CSSProperties = 
-            {
-                clipPath: 'polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%)',
-                zIndex: zIndex,
-                boxShadow: isCurrent ? '0 0 0 3px #a5b4fc' : undefined,
-                transition: 'box-shadow 0.2s',
-              };
-          // Always show tooltip for all stages
-          const fullLabel = toPerfectTitleCase(group.name);
-          return (
-            <button
-              key={group.name}
-              type="button"
-              onClick={() => !isCurrent && stageStatus[group.name] !== 'untouched' && onStageClick(idx)}
-              className={`min-w-0 flex-col items-center justify-center transition-all duration-200 shadow-sm focus:outline-none border-2 border-transparent ${colorClass} ${isCurrent ? '' : ''} ${stageStatus[group.name] === 'untouched' ? 'cursor-not-allowed opacity-60' : 'hover:scale-105'}`}
-              style={{
-                ...chevronStyle,
-				marginLeft: idx > 0 ? '-18px' : '0',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: '100%',
-				padding: '0 1.5rem',
-              }}
-              disabled={isCurrent || stageStatus[group.name] === 'untouched'}
-              aria-current={isCurrent ? 'step' : undefined}
-              title={fullLabel}
-            >
-              {fullLabel}
-            </button>
-          );
-        })}
-    </div>
-  );
+const StageProgressBar: React.FC<StageProgressBarProps> = ({ form, stageStatus, currentStage, onStageClick }) => {
+	const stages = form.stages;
+	// Colors for each status
+	const statusColors = {
+		complete: 'bg-blue-500 text-white',
+		incomplete: 'bg-red-400 text-white',
+		untouched: 'bg-blue-200 text-blue-700',
+		current: 'bg-blue-400 text-white',
+	};
+
+	if (stages.length <= 1) {
+		return null; // No progress bar needed for single stage
+	}else{
+		return (
+			<div className="w-full flex overflow-hidden">
+				{stages.map((group, idx) => {
+					const isCurrent = idx === currentStage;
+					const status = isCurrent
+						? 'current'
+						: stageStatus[group.name] === 'complete'
+							? 'complete'
+							: stageStatus[group.name] === 'incomplete'
+								? 'incomplete'
+								: 'untouched';
+					const zIndex = 10 + idx;
+					const colorClass = statusColors[status];
+					// Chevron shape for all except last
+					const chevronStyle: React.CSSProperties =
+					{
+						clipPath: 'polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%)',
+						zIndex: zIndex,
+						boxShadow: isCurrent ? '0 0 0 3px #a5b4fc' : undefined,
+						transition: 'box-shadow 0.2s',
+					};
+					// Always show tooltip for all stages
+					const fullLabel = toPerfectTitleCase(group.name);
+					return (
+						<button
+							key={group.name}
+							type="button"
+							onClick={() => !isCurrent && stageStatus[group.name] !== 'untouched' && onStageClick(idx)}
+							className={`min-w-0 flex-col items-center justify-center transition-all duration-200 shadow-sm focus:outline-none border-2 border-transparent ${colorClass} ${isCurrent ? '' : ''} ${stageStatus[group.name] === 'untouched' ? 'cursor-not-allowed opacity-60' : 'hover:scale-105'}`}
+							style={{
+								...chevronStyle,
+								marginLeft: idx > 0 ? '-18px' : '0',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap',
+								maxWidth: '100%',
+								padding: '0 1.5rem',
+							}}
+							disabled={isCurrent || stageStatus[group.name] === 'untouched'}
+							aria-current={isCurrent ? 'step' : undefined}
+							title={fullLabel}
+						>
+							{fullLabel}
+						</button>
+					);
+				})}
+			</div>
+		);
+	}
 };
 
 const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
-	const form = formConfig.formGroup;
-	const showformStageName = formConfig.showformStageName ?? true;
+	const stages = formConfig.stages;
+	const hideName = formConfig.hideName ?? true;
 	const [stage, setStage] = useState(0);
-	const [values, setValues] = useState(getInitialValues(form));
+	const [values, setValues] = useState(getInitialValues(formConfig));
 	const [stageErrors, setStageErrors] = useState<Record<string, string>>({});
 	const [stageStatus, setStageStatus] = useState<{ [groupName: string]: 'untouched' | 'incomplete' | 'complete' }>(() => {
 		const status: { [groupName: string]: 'untouched' | 'incomplete' | 'complete' } = {};
-		form.forEach(group => {
+		stages.forEach(group => {
 			status[group.name] = 'untouched';
 		});
 		return status;
@@ -376,10 +382,10 @@ const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 		// Update calculated fields after any change
 		const updateCalculatedFields = (fields: (Field | GroupField | Section)[], parentObj: any, allValues: any) => {
 			fields.forEach(field => {
-				if ('fields' in field && !('type' in field)) {
+				if (field.type === TypeValues.section) {
 					// Section
 					updateCalculatedFields(field.fields, parentObj, allValues);
-				} else if ('type' in field && field.type === 'group' && 'fields' in field && Array.isArray(field.fields)) {
+				} else if (field.type === TypeValues.group) {
 					if (!parentObj[field.name]) parentObj[field.name] = {};
 					updateCalculatedFields(field.fields, parentObj[field.name], allValues);
 				} else if (field.valueCalculation) {
@@ -387,20 +393,20 @@ const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 				}
 			});
 		};
-		form.forEach(group => {
-			updateCalculatedFields(group.fields, newValues, newValues);
+		stages.forEach(stage => {
+			updateCalculatedFields(stage.fields, newValues, newValues);
 		});
 
 		setValues(newValues);
 		// Trigger validation for the current stage on every change
-		const errors = validateStage(flattenFields(currentGroup.fields), newValues);
+		const errors = validateStage(flattenFields(currentStage.fields), newValues);
 		setStageErrors(errors);
 	};
 
 	const validateStage = (fields: (Field | GroupField)[], values: any, parentName?: string): Record<string, string> => {
 		const errors: Record<string, string> = {};
 		fields.forEach((field) => {
-			if (field.type === 'group' && 'fields' in field && Array.isArray(field.fields)) {
+			if (field.type === TypeValues.group) {
 				const groupErrors = validateStage(field.fields, values[field.name] || {}, field.name);
 				Object.keys(groupErrors).forEach((key) => {
 					errors[`${field.name}.${key}`] = groupErrors[key];
@@ -454,39 +460,39 @@ const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 
 	const handleNextOrSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if(stage === form.length - 1) {
+		if (stage === stages.length - 1) {
 			handleSubmit();
 			return;
 		}
-		const errors = validateStage(flattenFields(currentGroup.fields), values);
+		const errors = validateStage(flattenFields(currentStage.fields), values);
 		if (Object.keys(errors).length > 0) {
 			setStageErrors(errors);
 			// Mark current stage as incomplete
-			setStageStatus(prev => ({ ...prev, [currentGroup.name]: 'incomplete' }));
+			setStageStatus(prev => ({ ...prev, [currentStage.name]: 'incomplete' }));
 			return;
 		}
 		setStageErrors({});
 		// Mark current stage as complete
-		setStageStatus(prev => ({ ...prev, [currentGroup.name]: 'complete' }));
+		setStageStatus(prev => ({ ...prev, [currentStage.name]: 'complete' }));
 		setStage((prev) => prev + 1);
 	};
 	const handlePrev = () => setStage(stage - 1)
 	const handleSubmit = () => {
-		const errors = validateStage(flattenFields(currentGroup.fields), values);
+		const errors = validateStage(flattenFields(currentStage.fields), values);
 		if (Object.keys(errors).length > 0) {
 			setStageErrors(errors);
 			// Mark current stage as incomplete
-			setStageStatus(prev => ({ ...prev, [currentGroup.name]: 'incomplete' }));
+			setStageStatus(prev => ({ ...prev, [currentStage.name]: 'incomplete' }));
 			return;
 		}
 		setStageErrors({});
 		// Mark current stage as complete
-		setStageStatus(prev => ({ ...prev, [currentGroup.name]: 'complete' }));
+		setStageStatus(prev => ({ ...prev, [currentStage.name]: 'complete' }));
 		alert(JSON.stringify(values, null, 2));
 		console.log('Form submitted:', values);
 	};
 
-	const currentGroup = form[stage];
+	const currentStage = stages[stage];
 
 	const handleStageClick = (idx: number) => {
 		setStage(idx);
@@ -496,7 +502,7 @@ const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 		<div className="gap-4 flex flex-col w-full max-w-5xl bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100 m-auto">
 			<h2 className="text-3xl font-bold text-center text-blue-700">{formConfig.name}</h2>
 			<StageProgressBar
-				stages={form}
+				form={formConfig}
 				stageStatus={stageStatus}
 				currentStage={stage}
 				onStageClick={handleStageClick}
@@ -504,25 +510,25 @@ const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 			<form noValidate onSubmit={handleNextOrSubmit}
 				className="flex flex-col w-full "
 			>
-				{showformStageName && <h3 className="text-xl font-semibold mb-4 text-blue-800">{toPerfectTitleCase(currentGroup.name)}</h3>}
+				{!hideName && <h3 className="text-xl font-semibold mb-4 text-blue-800">{toPerfectTitleCase(currentStage.name)}</h3>}
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					{currentGroup.fields.map((field) =>
+					{currentStage.fields.map((field) =>
 						renderFieldOrSection(
 							field,
 							values[field.name],
 							handleChange,
 							undefined,
 							values,
-							stageStatus[currentGroup.name] !== 'untouched' ? stageErrors : {} // Only show errors if not untouched
+							stageStatus[currentStage.name] !== 'untouched' ? stageErrors : {} // Only show errors if not untouched
 						)
 					)}
 				</div>
 				<div className="flex justify-between mt-8">
-					{stage > 0 && (
+					{stage > 0 ? (
 						<button type="button" onClick={handlePrev} className="bg-gray-300 px-4 py-2 rounded">Previous</button>
-					)}
-					<button type="submit" className={`${stage === form.length - 1? "bg-green-600": "bg-blue-600"} text-white px-4 py-2 rounded`}>
-						{stage === form.length - 1? "Submit": "Next"}
+					): <div></div> }
+					<button type="submit" className={`${stage === stages.length - 1 ? "bg-green-600" : "bg-blue-600"} text-white px-4 py-2 rounded`}>
+						{stage === stages.length - 1 ? "Submit" : "Next"}
 					</button>
 				</div>
 			</form>
