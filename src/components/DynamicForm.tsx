@@ -353,7 +353,7 @@ const StageProgressBar: React.FC<StageProgressBarProps> = ({ form, stageStatus, 
 const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 	const stages = formConfig.stages;
 	const hideName = formConfig.hideName ?? true;
-	const [stage, setStage] = useState(0);
+	const [stage, setStage] = useState<number>(0);
 	const [values, setValues] = useState(getInitialValues(formConfig));
 	const [stageErrors, setStageErrors] = useState<Record<string, string>>({});
 	const [stageStatus, setStageStatus] = useState<{ [groupName: string]: 'untouched' | 'incomplete' | 'complete' }>(() => {
