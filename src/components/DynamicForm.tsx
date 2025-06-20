@@ -344,7 +344,7 @@ const StageProgressBar: React.FC<StageProgressBarProps> = ({ stages, stageStatus
   );
 };
 
-const DynamicQuoteForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
+const DynamicForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 	const form = formConfig.formGroup;
 	const showformStageName = formConfig.showformStageName ?? true;
 	const [stage, setStage] = useState(0);
@@ -530,4 +530,4 @@ const DynamicQuoteForm: React.FC<{ formConfig: Form }> = ({ formConfig }) => {
 	);
 };
 
-export default DynamicQuoteForm;
+export default DynamicForm;
