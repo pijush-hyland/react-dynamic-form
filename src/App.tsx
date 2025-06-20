@@ -11,17 +11,16 @@ export default function App() {
       <Router>
         <div className="min-h-screen flex flex-col bg-gray-100 gap-6">
           <header className="bg-blue-700 text-white py-4 shadow sticky top-0 z-50">
-            <h1 className="text-2xl font-bold px-4 text-left">INDOLOG LOGISTICS</h1>
+            <h1 className="text-2xl font-bold px-4 text-left">Hyland</h1>
           </header>
           <main className="flex-1 container mx-auto px-4">
             <Routes>
               <Route path="/" element={<ContactForm />} />
-              {/* <Route path="/Dyquote" element={<DynamicQuoteForm />} /> */}
               <Route path="/quote" element={<DynamicQuoteForm formConfig={{formGroup: quoteOptions, name: "Get a Shipment Quote", showformStageName: false}}/>} />
             </Routes>
           </main>
           <footer className="py-6 text-center text-blue-900 bg-blue-50 border-t border-blue-100">
-            &copy; {new Date().getFullYear()} INDOLOG LOGISTICS. All rights reserved.
+            &copy; {new Date().getFullYear()} Hyland. All rights reserved.
           </footer>
         </div>
       </Router>

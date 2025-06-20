@@ -9,7 +9,7 @@ export type FieldValidation = {
 
 export type FieldBase = {
     name: string;   // Name of the form field
-    type: string;   // Type of the form field (e.g., text, email, number, group)
+    type?: string;   // Type of the form field (e.g., text, email, number, group)
     label?: string;  // Label for the form field or group (optional for non-group fields)
     hiddenLabel?: boolean; // Whether to hide the label for the field
     placeholder?: string; // Placeholder text for the form field
